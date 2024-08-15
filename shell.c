@@ -1,22 +1,36 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/stat.h>
+#include "main.h"
 char *buffer = NULL;
 void handle_sigint(int signal)
 {
 	free(buffer);
-	exit(0);
+	exit(signal);
 }
+
+char **get_flags(char *buffer, char *argv[])
+{
+	char *path, *arguments;
+	int i;
+
+	path = strtok(buffer, " \n\r\t");
+	if (path == NULL)
+		return (NULL);
+	argv[0] = path;
+	arguments = path;
+	for (i = 1; arguments != NULL; i++)
+	{
+		arguments = strtok(NULL, " \n\r\t");
+		argv[i] = arguments;
+	}
+	argv[i] = NULL;
+	return (argv);
+}
+
 int main(void)
 {
-	ssize_t buffsize = 1024;
-	char *path, *arguments;
-	int status, i;
-	char *argv[1024];
+	size_t buffsize = 1024;
+	char *argv[1024], absolute_path[1024], *buffer;
+	int status;
+	pid_t pid;
 	struct stat st;
 
 	buffer = malloc(sizeof(char) * buffsize);
@@ -27,26 +41,37 @@ int main(void)
 	printf("$ ");
 	while (getline(&buffer, &buffsize, stdin) != -1)
 	{
-		path = strtok(buffer, " \n\r\t");
-		if (stat(path, &st) != -1)
+		if (get_flags(buffer, argv) == NULL)
 		{
-			argv[0] = path;
-			arguments = path;
-			for (i = 1; arguments != NULL; i++)
-			{
-				arguments = strtok(NULL, " \n\r\t");
-				argv[i] = arguments;
-			}
-			argv[i] = NULL;
-			pid_t p = fork();
-			if (p == 0)
+			printf("$ ");
+			continue;
+		}
+		if (argv[0][0] != '/')
+		{
+			strcpy(absolute_path, find_path(argv[0]));
+		}
+		else
+		{
+			strcpy(absolute_path, argv[0]);
+		}
+		if (stat(absolute_path, &st) != -1)
+		{
+			argv[0] = absolute_path;
+			pid = fork();
+			if (pid == 0)
 			{
 				execv(argv[0], argv);
+				perror("execv failed");
+				exit(EXIT_FAILURE);
 			}
 			else
 			{
 				wait(&status);
 			}
+		}
+		else
+		{
+			printf("Command not found: %s\n", argv[0]);
 		}
 		printf("$ ");
 	}
