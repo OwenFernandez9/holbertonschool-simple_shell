@@ -4,7 +4,7 @@
 extern char **environ;
 char *_getenv(const char *name)
 {
-	char * env_val, * env_var, ** env, * env_check;
+	char *env_val, *env_var, **env, *env_check;
 	
 	for (env = environ; env != NULL; env++)
 	{
@@ -12,14 +12,23 @@ char *_getenv(const char *name)
 		env_var = strtok(env_check, "=");
 		env_val = strtok(NULL, "=");
 		if (strcmp(name, env_var) == 0)
-		{
-			printf("%s\n", env_val);
 			return (env_val);
-		}
 	}
 	return (NULL);
 }
+char *find_path(const char *file_name)
+{
+	char *path, *path_check, *absolute_route;
+
+	path = _getenv("PATH");
+	path_check = strtok(path, ":");
+	strcat(path_check, "/");
+	strcat(path_check, file_name);
+	#ifdef DEBUG
+        printf("%s\n", path_check);
+        #endif
+}
 int main(void)
 {
-        _getenv("PATH");
+     	find_path("ls");
 }
