@@ -4,28 +4,19 @@
 extern char **environ;
 char *_getenv(const char *name)
 {
-	char * env_val;
-	char * env_var;
-	int cmp;
-
-	env_var = strdup(*environ);
-	env_var = strtok(env_var, "=");
-	env_val = strtok(NULL, "=");
-	cmp = strcmp(name, env_var);
-	while (cmp != 0 && environ != NULL)
+	char * env_val, * env_var, ** env, * env_check;
+	
+	for (env = environ; env != NULL; env++)
 	{
-		environ++;
-		if (environ != NULL)
+		env_check = *env;
+		env_var = strtok(env_check, "=");
+		env_val = strtok(NULL, "=");
+		if (strcmp(name, env_var) == 0)
 		{
-			env_var = strdup(*environ);
-			env_var = strdup(*environ);
-			env_val = strtok(NULL, "=");
-			cmp = strcmp(name, env_var);
+			printf("%s\n", env_val);
+			return (env_val);
 		}
 	}
-	free(env_val);
-	if (env_var != NULL)
-		return (env_var);
 	return (NULL);
 }
 int main(void)
