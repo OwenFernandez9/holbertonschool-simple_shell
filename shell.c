@@ -1,11 +1,10 @@
 #include "main.h"
-char *buffer = NULL;
-void handle_sigint(int signal)
-{
-	free(buffer);
-	exit(signal);
-}
-
+/**
+ * get_flags - tokenises user arguments
+ * @buffer: the user input string
+ * @argv: the array to fill
+ * Return: an array of user arguments
+ */
 char **get_flags(char *buffer, char *argv[])
 {
 	char *path, *arguments;
@@ -24,20 +23,22 @@ char **get_flags(char *buffer, char *argv[])
 	argv[i] = NULL;
 	return (argv);
 }
-
+/**
+ * main - simple shell
+ *
+ * Return: Always 0.
+ */
 int main(void)
 {
 	size_t buffsize = 1024;
-	char *argv[1024], absolute_path[1024], *buffer;
+	char *argv[1024], absolute_path[1024], *buffer = NULL;
 	int status;
 	pid_t pid;
 	struct stat st;
 
 	buffer = malloc(sizeof(char) * buffsize);
 	if (buffer == NULL)
-		return(-1);
-	signal(SIGINT, handle_sigint);
-
+		return (-1);
 	printf("$ ");
 	while (getline(&buffer, &buffsize, stdin) != -1)
 	{
@@ -47,13 +48,9 @@ int main(void)
 			continue;
 		}
 		if (argv[0][0] != '/')
-		{
 			strcpy(absolute_path, find_path(argv[0]));
-		}
 		else
-		{
 			strcpy(absolute_path, argv[0]);
-		}
 		if (stat(absolute_path, &st) != -1)
 		{
 			argv[0] = absolute_path;
@@ -65,14 +62,10 @@ int main(void)
 				exit(EXIT_FAILURE);
 			}
 			else
-			{
 				wait(&status);
-			}
 		}
 		else
-		{
 			printf("Command not found: %s\n", argv[0]);
-		}
 		printf("$ ");
 	}
 	free(buffer);

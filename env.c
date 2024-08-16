@@ -1,16 +1,20 @@
 #include "main.h"
-extern char **environ;
+/**
+ * _getenv - search the value of a variable
+ * @name: name of the variable to check
+ * Return: the values in the environ
+ */
 char *_getenv(const char *name)
 {
 	char *env_val, *env_var, **env, *env_dup;
-	
+
 	for (env = environ; env != NULL; env++)
 	{
 		env_dup = strdup(*env);
 		if (env_dup == NULL)
 		{
 			perror("Memory allocation failed");
-    			return NULL;
+			return (NULL);
 		}
 		env_var = strtok(env_dup, "=");
 		env_val = strtok(NULL, "=");
@@ -24,32 +28,34 @@ char *_getenv(const char *name)
 	}
 	return (NULL);
 }
+/**
+* find_path - checks if a file exist
+* @file_name: name of the file to check
+* Return: the route to the file
+*/
 char *find_path(const char *file_name)
 {
 	char *path, *path_check, *path_dup, *absolute_route;
 	struct stat st;
+	int dup_size;
 
 	path = _getenv("PATH");
 	if (path == NULL)
 	{
 		perror("Failed to retrieve PATH");
-		return NULL;
+		return (NULL);
 	}
 	path_dup = strdup(path);
-	if (path_dup == NULL)
-	{
-		perror("memory allocation failed");
-		return NULL;
-	}
 	path_check = strtok(path_dup, ":");
 	while (path_check != NULL)
 	{
-		absolute_route = malloc((strlen(path_check) + strlen(file_name) + 2) * sizeof(char));
+		dup_size = (strlen(path_check) + strlen(file_name) + 2);
+		absolute_route = malloc(dup_size * sizeof(char));
 		if (absolute_route == NULL)
 		{
 			perror("Memory allocation failed");
 			free(path_dup);
-			return NULL;
+			return (NULL);
 		}
 		strcpy(absolute_route, path_check);
 		strcat(absolute_route, "/");
