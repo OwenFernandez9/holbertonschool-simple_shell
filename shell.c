@@ -12,7 +12,10 @@ char **get_flags(char *buffer, char *argv[])
 
 	path = strtok(buffer, " \n\r\t");
 	if (path == NULL)
+	{
+		perror("./shell");
 		return (NULL);
+	}
 	argv[0] = path;
 	arguments = path;
 	for (i = 1; arguments != NULL; i++)
@@ -31,7 +34,7 @@ char **get_flags(char *buffer, char *argv[])
 int main(void)
 {
 	size_t buffsize = 1024;
-	char *argv[1024], absolute_path[1024], *buffer = NULL;
+	char *argv[1024], *buffer = NULL;
 	int status;
 	pid_t pid;
 	struct stat st;
@@ -48,24 +51,29 @@ int main(void)
 			continue;
 		}
 		if (argv[0][0] != '/')
-			strcpy(absolute_path, find_path(argv[0]));
-		else
-			strcpy(absolute_path, argv[0]);
-		if (stat(absolute_path, &st) != -1)
 		{
-			argv[0] = absolute_path;
+			if (find_path(argv[0]) == -1)
+			{
+				printf("$ ");
+				continue;
+			}
+		}
+		if (stat(argv[0], &st) != -1)
+		{
 			pid = fork();
 			if (pid == 0)
 			{
 				execv(argv[0], argv);
-				perror("execv failed");
+				perror("./shell");
 				exit(EXIT_FAILURE);
 			}
 			else
 				wait(&status);
 		}
 		else
-			printf("Command not found: %s\n", argv[0]);
+			continue;
+		if (argv[0] != NULL && argv[0][0] != '/')
+			free(argv[0]);
 		printf("$ ");
 	}
 	free(buffer);

@@ -13,7 +13,7 @@ char *_getenv(const char *name)
 		env_dup = strdup(*env);
 		if (env_dup == NULL)
 		{
-			perror("Memory allocation failed");
+			perror("./shell");
 			return (NULL);
 		}
 		env_var = strtok(env_dup, "=");
@@ -33,7 +33,7 @@ char *_getenv(const char *name)
 * @file_name: name of the file to check
 * Return: the route to the file
 */
-char *find_path(const char *file_name)
+int find_path(char *file_name)
 {
 	char *path, *path_check, *path_dup, *absolute_route;
 	struct stat st;
@@ -42,8 +42,8 @@ char *find_path(const char *file_name)
 	path = _getenv("PATH");
 	if (path == NULL)
 	{
-		perror("Failed to retrieve PATH");
-		return (NULL);
+		perror("./shell");
+		return (-1);
 	}
 	path_dup = strdup(path);
 	path_check = strtok(path_dup, ":");
@@ -55,20 +55,22 @@ char *find_path(const char *file_name)
 		{
 			perror("Memory allocation failed");
 			free(path_dup);
-			return (NULL);
+			return (-1);
 		}
-		strcpy(absolute_route, path_check);
-		strcat(absolute_route, "/");
-		strcat(absolute_route, file_name);
+		sprintf(absolute_route, "%s/%s", path_check, file_name);
 		if (stat(absolute_route, &st) == 0)
 		{
 			free(path_dup);
-			return (absolute_route);
+			free(path);
+			strcpy(file_name, absolute_route);
+			free(absolute_route);
+			return (1);
 		}
-		free(absolute_route);
 		path_check = strtok(NULL, ":");
+		free(absolute_route);
 	}
-	perror("Command not found in PATH");
+	perror("./shell");
+	free(path);
 	free(path_dup);
-	return (NULL);
+	return (-1);
 }
