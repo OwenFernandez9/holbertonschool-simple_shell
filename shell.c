@@ -7,7 +7,7 @@
  */
 char **get_flags(char *buffer, char *argv[])
 {
-	char *path, *arguments;
+	char *path, *arguments, **env;
 	int i;
 
 	path = strtok(buffer, " \n\r\t");
@@ -17,6 +17,17 @@ char **get_flags(char *buffer, char *argv[])
 		return (NULL);
 	}
 	argv[0] = path;
+	if (strcmp(argv[0], "exit") == 0)
+	{
+		free(buffer);
+		exit(EXIT_SUCCESS);
+	}
+	if (strcmp(argv[0], "env") == 0)
+	{
+		for (env = environ; *env != NULL; env++)
+			printf("%s\n", *env);
+		return (0);
+	}
 	arguments = path;
 	for (i = 1; arguments != NULL; i++)
 	{
