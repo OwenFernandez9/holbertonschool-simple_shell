@@ -8,7 +8,7 @@ char *_getenv(const char *name)
 {
 	char *env_val, *env_var, **env, *env_dup;
 
-	for (env = environ; env != NULL; env++)
+	for (env = environ; *env != NULL; env++)
 	{
 		env_dup = strdup(*env);
 		if (env_dup == NULL)
@@ -18,7 +18,7 @@ char *_getenv(const char *name)
 		}
 		env_var = strtok(env_dup, "=");
 		env_val = strtok(NULL, "=");
-		if (strcmp(name, env_var) == 0)
+		if (env_var && strcmp(name, env_var) == 0)
 		{
 			env_val = strdup(env_val);
 			free(env_dup);
@@ -33,7 +33,7 @@ char *_getenv(const char *name)
 * @file_name: name of the file to check
 * Return: the route to the file
 */
-int find_path(char *file_name)
+char *find_path(char *file_name)
 {
 	char *path, *path_check, *path_dup, *absolute_route;
 	struct stat st;
@@ -43,9 +43,10 @@ int find_path(char *file_name)
 	if (path == NULL)
 	{
 		perror("./shell");
-		return (-1);
+		return (NULL);
 	}
 	path_dup = strdup(path);
+	free(path);
 	path_check = strtok(path_dup, ":");
 	while (path_check != NULL)
 	{
@@ -55,22 +56,18 @@ int find_path(char *file_name)
 		{
 			perror("Memory allocation failed");
 			free(path_dup);
-			return (-1);
+			return (NULL);
 		}
 		sprintf(absolute_route, "%s/%s", path_check, file_name);
 		if (stat(absolute_route, &st) == 0)
 		{
 			free(path_dup);
-			free(path);
-			strcpy(file_name, absolute_route);
-			free(absolute_route);
-			return (1);
+			return (absolute_route);
 		}
 		path_check = strtok(NULL, ":");
 		free(absolute_route);
 	}
 	perror("./shell");
-	free(path);
 	free(path_dup);
-	return (-1);
+	return (NULL);
 }

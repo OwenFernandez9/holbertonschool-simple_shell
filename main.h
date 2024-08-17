@@ -11,6 +11,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 extern char **environ;
-int find_path(char *file_name);
+char *find_path(char *file_name);
 char *_getenv(const char *name);
 #endif
