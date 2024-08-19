@@ -86,12 +86,13 @@ int main(int ac, char **av, char **env)
 {
 	size_t buffsize = 1024;
 	char *arguments[1024], *buffer = NULL;
+	(void)ac;
 
-	printf("%i\n", ac);
 	buffer = malloc(sizeof(char) * buffsize);
 	if (buffer == NULL)
 		return (-1);
-	printf("$ ");
+	if (isatty(STDIN_FILENO))
+		printf("$ ");
 	while (getline(&buffer, &buffsize, stdin) != -1)
 	{
 		if (get_flags(buffer, arguments, av, env) == NULL)
@@ -100,7 +101,8 @@ int main(int ac, char **av, char **env)
 			continue;
 		}
 		handle_arg(arguments, av, env);
-		printf("$ ");
+		if (isatty(STDIN_FILENO))
+			printf("$ ");
 	}
 	free(buffer);
 	return (0);
