@@ -5,77 +5,74 @@
  * @argv: the array to fill
  * Return: an array of user arguments
  */
-char **get_flags(char *buffer, char *argv[])
+char **get_flags(char *buffer, char *arguments[], char **av, char **env)
 {
-	char *path, *arguments, **env;
+	char *path, *processed_arg;
 	int i;
 
 	path = strtok(buffer, " \n\r\t");
 	if (path == NULL)
 	{
-		perror("./shell");
+		perror(av[0]);
 		return (NULL);
 	}
-	argv[0] = path;
-	if (strcmp(argv[0], "exit") == 0)
+	arguments[0] = path;
+	if (strcmp(arguments[0], "exit") == 0)
 	{
 		free(buffer);
 		exit(EXIT_SUCCESS);
 	}
-	if (strcmp(argv[0], "env") == 0)
+	if (strcmp(arguments[0], "env") == 0)
 	{
-		for (env = environ; *env != NULL; env++)
+		for (; *env != NULL; env++)
 			printf("%s\n", *env);
 		return (0);
 	}
-	arguments = path;
-	for (i = 1; arguments != NULL; i++)
+	processed_arg = path;
+	for (i = 1; processed_arg != NULL; i++)
 	{
-		arguments = strtok(NULL, " \n\r\t");
-		argv[i] = arguments;
+		processed_arg = strtok(NULL, " \n\r\t");
+		arguments[i] = processed_arg;
 	}
-	argv[i] = NULL;
-	return (argv);
+	arguments[i] = NULL;
+	return (arguments);
 }
 /**
  * handle_arg - analizes the first argument
  * @argv: the first argument inputed
  * Return: argument analized
  */
-int handle_arg(char *argv[1024])
+int handle_arg(char *arguments[1024], char **av, char **env)
 {
 	char *path = NULL;
 	pid_t pid = 0;
 	int status = 0;
 	struct stat st;
 
-	if (argv[0][0] != '/')
+	if (arguments[0][0] != '/')
 	{
-		path = find_path(argv[0]);
+		path = find_path(arguments[0], av, env);
 		if (path == NULL)
-		{
-			printf("$ ");
 			return(0);
-		}
-		argv[0] = path;
+		arguments[0] = path;
 	}
-	if (stat(argv[0], &st) != -1)
+	if (stat(arguments[0], &st) != -1)
 	{
 		pid = fork();
 		if (pid == 0)
 		{
-			execv(argv[0], argv);
-			perror("./shell");
+			execv(arguments[0], arguments);
+			perror(av[0]);
 			exit(EXIT_FAILURE);
 		}
 		else
 			wait(&status);
-		if (argv[0] == path)
+		if (arguments[0] == path)
 			free(path);
 	}
 	else
 	{
-		perror("./shell");
+		perror(av[0]);
 		return(0);
 	}
 	return (0);
@@ -85,23 +82,24 @@ int handle_arg(char *argv[1024])
  *
  * Return: Always 0.
  */
-int main(void)
+int main(int ac, char **av, char **env)
 {
 	size_t buffsize = 1024;
-	char *argv[1024], *buffer = NULL;
+	char *arguments[1024], *buffer = NULL;
 
+	printf("%i\n", ac);
 	buffer = malloc(sizeof(char) * buffsize);
 	if (buffer == NULL)
 		return (-1);
 	printf("$ ");
 	while (getline(&buffer, &buffsize, stdin) != -1)
 	{
-		if (get_flags(buffer, argv) == NULL)
+		if (get_flags(buffer, arguments, av, env) == NULL)
 		{
 			printf("$ ");
 			continue;
 		}
-		handle_arg(argv);
+		handle_arg(arguments, av, env);
 		printf("$ ");
 	}
 	free(buffer);

@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <signal.h>
-extern char **environ;
-char *find_path(char *file_name);
-char *_getenv(const char *name);
+char *find_path(char *file_name, char **av, char **env);
+char *_getenv(const char *name, char **av, char **env);
 #endif

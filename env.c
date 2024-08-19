@@ -4,16 +4,16 @@
  * @name: name of the variable to check
  * Return: the values in the environ
  */
-char *_getenv(const char *name)
+char *_getenv(const char *name, char **av,  char **enviroment)
 {
 	char *env_val, *env_var, **env, *env_dup;
 
-	for (env = environ; *env != NULL; env++)
+	for (env = enviroment; *env != NULL; env++)
 	{
 		env_dup = strdup(*env);
 		if (env_dup == NULL)
 		{
-			perror("./shell");
+			perror(av[0]);
 			return (NULL);
 		}
 		env_var = strtok(env_dup, "=");
@@ -33,16 +33,16 @@ char *_getenv(const char *name)
 * @file_name: name of the file to check
 * Return: the route to the file
 */
-char *find_path(char *file_name)
+char *find_path(char *file_name, char **av, char **env)
 {
 	char *path, *path_check, *path_dup, *absolute_route;
 	struct stat st;
 	int dup_size;
 
-	path = _getenv("PATH");
+	path = _getenv("PATH", av, env);
 	if (path == NULL)
 	{
-		perror("./shell");
+		perror(av[0]);
 		return (NULL);
 	}
 	path_dup = strdup(path);
@@ -67,7 +67,7 @@ char *find_path(char *file_name)
 		path_check = strtok(NULL, ":");
 		free(absolute_route);
 	}
-	perror("./shell");
+	perror(av[0]);
 	free(path_dup);
 	return (NULL);
 }
