@@ -6,7 +6,7 @@
  * @enviroment: enviroment
  * Return: the values in the environ
  */
-char *_getenv(const char *name, char **av,  char **enviroment)
+char *_getenv(const char *name, char **enviroment)
 {
 	char *env_val, *env_var, **env, *env_dup;
 
@@ -14,10 +14,7 @@ char *_getenv(const char *name, char **av,  char **enviroment)
 	{
 		env_dup = strdup(*env);
 		if (env_dup == NULL)
-		{
-			perror(av[0]);
 			return (NULL);
-		}
 		env_var = strtok(env_dup, "=");
 		env_val = strtok(NULL, "=");
 		if (env_var && strcmp(name, env_var) == 0)
@@ -30,6 +27,17 @@ char *_getenv(const char *name, char **av,  char **enviroment)
 	}
 	return (NULL);
 }
+int invalid_path(const char *str)
+{
+	int i;
+
+	for (i = 0; str[i] != '\0'; i++)
+	{
+		if (str[i] != '.' && str[i] != '/')
+			return (0);
+	}
+    return (1);
+}
 /**
 * find_path - checks if a file exist
 * @file_name: name of the file to check
@@ -37,16 +45,16 @@ char *_getenv(const char *name, char **av,  char **enviroment)
 * @env: enviroment
 * Return: the route to the file
 */
-char *find_path(char *file_name, char **av, char **env)
+char *find_path(char *file_name, char **av, char **env, size_t count)
 {
 	char *path, *path_check, *path_dup, *absolute_route;
 	struct stat st;
 	int dup_size;
 
-	path = _getenv("PATH", av, env);
+	path = _getenv("PATH", env);
 	if (path == NULL)
 	{
-		perror(av[0]);
+		handle_error(av[0], file_name, count);
 		return (NULL);
 	}
 	path_dup = strdup(path);
@@ -58,7 +66,7 @@ char *find_path(char *file_name, char **av, char **env)
 		absolute_route = malloc(dup_size * sizeof(char));
 		if (absolute_route == NULL)
 		{
-			perror("Memory allocation failed");
+			handle_error(av[0], file_name, count);
 			free(path_dup);
 			return (NULL);
 		}
@@ -71,7 +79,15 @@ char *find_path(char *file_name, char **av, char **env)
 		path_check = strtok(NULL, ":");
 		free(absolute_route);
 	}
-	perror(av[0]);
+	handle_error(av[0], file_name, count);
 	free(path_dup);
 	return (NULL);
+}
+void handle_error(char *av, char *command, size_t count)
+{
+	char *error;
+	error = malloc((sizeof(av) + sizeof(count) + sizeof(command) + 4) * sizeof(char));
+	sprintf(error, "%s: %li: %s", av, count, command);
+	perror(error);
+	free(error);
 }
