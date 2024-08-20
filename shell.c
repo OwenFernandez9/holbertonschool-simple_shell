@@ -2,7 +2,9 @@
 /**
  * get_flags - tokenises user arguments
  * @buffer: the user input string
- * @argv: the array to fill
+ * @arguments: buffer
+ * @av: argument vector
+ * @env: enviroment
  * Return: an array of user arguments
  */
 char **get_flags(char *buffer, char *arguments[], char **av, char **env)
@@ -39,7 +41,9 @@ char **get_flags(char *buffer, char *arguments[], char **av, char **env)
 }
 /**
  * handle_arg - analizes the first argument
- * @argv: the first argument inputed
+ * @arguments: Buffer
+ * @av: argument vector
+ * @env: enviroment
  * Return: argument analized
  */
 int handle_arg(char *arguments[1024], char **av, char **env)
@@ -53,7 +57,7 @@ int handle_arg(char *arguments[1024], char **av, char **env)
 	{
 		path = find_path(arguments[0], av, env);
 		if (path == NULL)
-			return(0);
+			return (0);
 		arguments[0] = path;
 	}
 	if (stat(arguments[0], &st) != -1)
@@ -61,7 +65,7 @@ int handle_arg(char *arguments[1024], char **av, char **env)
 		pid = fork();
 		if (pid == 0)
 		{
-			execv(arguments[0], arguments);
+			execve(arguments[0], arguments, env);
 			perror(av[0]);
 			exit(EXIT_FAILURE);
 		}
@@ -73,13 +77,16 @@ int handle_arg(char *arguments[1024], char **av, char **env)
 	else
 	{
 		perror(av[0]);
-		return(0);
+		return (0);
 	}
 	return (0);
 }
 /**
  * main - simple shell
  *
+ * @ac: argument count
+ * @av: argument vector
+ * @env: enviroment
  * Return: Always 0.
  */
 int main(int ac, char **av, char **env)

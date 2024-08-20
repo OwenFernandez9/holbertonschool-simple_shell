@@ -2,6 +2,8 @@
 /**
  * _getenv - search the value of a variable
  * @name: name of the variable to check
+ * @av: argument vector
+ * @enviroment: enviroment
  * Return: the values in the environ
  */
 char *_getenv(const char *name, char **av,  char **enviroment)
@@ -31,6 +33,8 @@ char *_getenv(const char *name, char **av,  char **enviroment)
 /**
 * find_path - checks if a file exist
 * @file_name: name of the file to check
+* @av: argument vector
+* @env: enviroment
 * Return: the route to the file
 */
 char *find_path(char *file_name, char **av, char **env)
