@@ -26,11 +26,11 @@ This project aims to create a basic shell that can execute commands and provide 
 
 1. Compile the code using `gcc`: 
     ```hsh
-    gcc -o shell shell.c env.c shell_utils.c
+    gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
     ```
 2. Run the shell:
     ```hsh
-    ./shell
+    ./hsh
     ```
 3. Type commands and press Enter to execute them
 
