@@ -39,7 +39,7 @@ This project aims to create a basic shell that can execute commands and provide 
 - `_getenv`: Retrieves the value of an environment variable
 - `find_path`: Searches for an executable file in the `PATH` environment variable
 - `get_flags`: Tokenizes the user input into arguments
-- handle_error: prints the last error in the same syntax as sh
+- `handle_error`: prints the last error in the same syntax as sh
 - `handle_arg`: Analyzes the first argument and executes the corresponding action
 - `main`: The main function of the shell, responsible for reading user input and executing commands
 
