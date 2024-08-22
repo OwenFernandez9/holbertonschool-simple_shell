@@ -56,17 +56,9 @@ char *find_path(char *file_name, char **env)
 	struct stat st;
 	int dup_size;
 
-	if (strncmp(file_name, "../", 3) == 0)
-	{
-		if (stat(file_name, &st) == 0)
-			return (file_name);
-		return (NULL);
-	}
 	path = _getenv("PATH", env);
 	if (path == NULL)
-	{
 		return (NULL);
-	}
 	path_dup = strdup(path);
 	free(path);
 	path_check = strtok(path_dup, ":");

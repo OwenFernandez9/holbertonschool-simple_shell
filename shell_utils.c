@@ -83,7 +83,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 	int status = 0;
 	struct stat st;
 
-	if (arguments[0][0] != '/')
+	if (arguments[0][0] != '/' && strncmp(arguments[0], "../", 3) != 0)
 	{
 		if (strncmp(arguments[0], "./", 2) == 0)
 		{
@@ -106,7 +106,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 		}
 		else if (pid > 0)
 			wait(&status);
-		if (path)
+		if (path != NULL)
 			free(path);
 		return (WEXITSTATUS(status));
 	}
