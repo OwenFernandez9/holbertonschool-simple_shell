@@ -24,12 +24,15 @@ char **get_flags(char *buffer, char *arguments[], char **env)
 	if (strcmp(arguments[0], "exit") == 0)
 	{
 		free(buffer);
+		free(arguments);
 		exit(EXIT_SUCCESS);
 	}
 	if (strcmp(arguments[0], "env") == 0)
 	{
 		for (; *env != NULL; env++)
 			printf("%s\n", *env);
+		free(buffer);
+                free(arguments);
 		return (0);
 	}
 	processed_arg = path;
