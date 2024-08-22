@@ -4,9 +4,10 @@
  * @buffer: the user input string
  * @arguments: buffer
  * @env: enviroment
+ * @status: the exit status
  * Return: an array of user arguments
  */
-char **get_flags(char *buffer, char *arguments[], char **env)
+char **get_flags(char *buffer, char *arguments[], char **env, int status)
 {
 	char *path, *processed_arg;
 	int i, args_size = 8;
@@ -25,7 +26,7 @@ char **get_flags(char *buffer, char *arguments[], char **env)
 	{
 		free(buffer);
 		free(arguments);
-		exit(EXIT_SUCCESS);
+		exit(status);
 	}
 	if (strcmp(arguments[0], "env") == 0)
 	{
@@ -63,7 +64,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 {
 	char *path = NULL;
 	pid_t pid = 0;
-	int status = 0;
+	int status = 4;
 	struct stat st;
 
 	if (arguments[0][0] != '/')
@@ -75,7 +76,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 		else
 			path = find_path(arguments[0], av, env, count);
 		if (path == NULL)
-			return (0);
+			return (2);
 		arguments[0] = path;
 	}
 	if (stat(arguments[0], &st) == 0)
@@ -91,13 +92,14 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 			wait(&status);
 		if (path)
 			free(path);
+		return(WIFEXITED(status));
 	}
 	else
 	{
 		handle_error(av[0], arguments[0], count);
-		return (0);
+		return (2);
 	}
-	return (0);
+	return (status);
 }
 /**
  * handle_error - returns a error message

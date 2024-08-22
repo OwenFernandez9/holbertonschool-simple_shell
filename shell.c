@@ -11,6 +11,7 @@ int main(int ac, char **av, char **env)
 {
 	size_t buffsize = 0, count = 0;
 	char **arguments = NULL, *buffer = NULL;
+	int status = 0;
 	(void)ac;
 
 	if (isatty(STDIN_FILENO))
@@ -22,7 +23,7 @@ int main(int ac, char **av, char **env)
 			printf("$ ");
 		count++;
 		arguments = NULL;
-		arguments = get_flags(buffer, arguments, env);
+		arguments = get_flags(buffer, arguments, env, status);
 		if (arguments == NULL)
 			continue;
 		if (invalid_path(arguments[0]) == 1)
@@ -31,9 +32,9 @@ int main(int ac, char **av, char **env)
 			free(arguments);
 			continue;
 		}
-		handle_arg(arguments, av, env, count);
+		status = handle_arg(arguments, av, env, count);
 		free(arguments);
 	}
 	free(buffer);
-	return (0);
+	return (status);
 }
