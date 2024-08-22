@@ -64,7 +64,7 @@ char *find_path(char *file_name, char **env)
 	path_check = strtok(path_dup, ":");
 	while (path_check != NULL)
 	{
-		dup_size = (strlen(path_check) + strlen(file_name) + 2);
+		dup_size = (*path_check + *file_name + 2);
 		absolute_route = malloc(dup_size * sizeof(char));
 		if (absolute_route == NULL)
 		{

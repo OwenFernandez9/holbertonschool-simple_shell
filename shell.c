@@ -33,7 +33,7 @@ int main(int ac, char **av, char **env)
 			continue;
 		}
 		status = handle_arg(arguments, av, env, count);
-		if (status == 2)
+		if (status == 2 || status == 139)
 		{
 			status = 127;
 			fprintf(stderr, "%s: %li: %s: not found\n",av[0], count, arguments[0]);
