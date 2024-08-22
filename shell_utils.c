@@ -32,8 +32,7 @@ char **get_flags(char *buffer, char *arguments[], char **env, int status)
 	{
 		for (; *env != NULL; env++)
 			printf("%s\n", *env);
-		free(buffer);
-                free(arguments);
+		free(arguments);
 		return (0);
 	}
 	processed_arg = path;
@@ -64,7 +63,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 {
 	char *path = NULL;
 	pid_t pid = 0;
-	int status = 4;
+	int status = 0;
 	struct stat st;
 
 	if (arguments[0][0] != '/')
@@ -92,7 +91,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 			wait(&status);
 		if (path)
 			free(path);
-		return(WIFEXITED(status));
+		return(WEXITSTATUS(status));
 	}
 	else
 	{
