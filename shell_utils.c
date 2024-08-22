@@ -16,7 +16,10 @@ char **get_flags(char *buffer, char *arguments[], char **env)
 		return (NULL);
 	path = strtok(buffer, " \n\r\t");
 	if (path == NULL)
+	{
+		free(arguments);
 		return (NULL);
+	}
 	arguments[0] = path;
 	if (strcmp(arguments[0], "exit") == 0)
 	{
