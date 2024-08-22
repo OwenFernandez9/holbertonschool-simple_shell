@@ -34,7 +34,10 @@ int main(int ac, char **av, char **env)
 		}
 		status = handle_arg(arguments, av, env, count);
 		if (status == 2)
+		{
+			status = 127;
 			printf("%s: %li: %s: not found\n",av[0], count, arguments[0]);
+		}
 		free(arguments);
 	}
 	free(buffer);
