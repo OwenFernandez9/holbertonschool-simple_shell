@@ -35,6 +35,5 @@ int main(int ac, char **av, char **env)
 		free(arguments);
 	}
 	free(buffer);
-	printf("\n");
 	return (0);
 }
