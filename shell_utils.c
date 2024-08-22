@@ -62,7 +62,12 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 
 	if (arguments[0][0] != '/')
 	{
-		path = find_path(arguments[0], av, env, count);
+		if (strncmp(arguments[0], "./", 2) == 0)
+		{
+			path = get_cwd(arguments[0], path, env);
+		}
+		else
+			path = find_path(arguments[0], av, env, count);
 		if (path == NULL)
 			return (0);
 		arguments[0] = path;
@@ -78,7 +83,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 		}
 		else if (pid > 0)
 			wait(&status);
-		if (arguments[0] == path)
+		if (path)
 			free(path);
 	}
 	else
@@ -103,4 +108,24 @@ void handle_error(char *av, char *command, size_t count)
 	sprintf(error, "%s: %li: %s", av, count, command);
 	perror(error);
 	free(error);
+}
+/**
+ * get_cwd - get the absolute route
+ * @file_name: end of route
+ * @env: enviroment
+ * @path: a pointer to store
+ * Return: modified path
+ */
+char *get_cwd(char *file_name, char *path, char **env)
+{
+	char *cwd, *relative_path;
+
+	cwd = _getenv("PWD", env);
+	relative_path = strdup(file_name + 2);
+	strtok(relative_path, "./");
+	path = malloc(strlen(cwd) + strlen(relative_path) + 2);
+	sprintf(path, "%s/%s", cwd, relative_path);
+	free(relative_path);
+	free(cwd);
+	return (path);
 }
