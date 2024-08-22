@@ -2,7 +2,6 @@
 /**
  * _getenv - search the value of a variable
  * @name: name of the variable to check
- * @av: argument vector
  * @enviroment: enviroment
  * Return: the values in the environ
  */
@@ -27,6 +26,11 @@ char *_getenv(const char *name, char **enviroment)
 	}
 	return (NULL);
 }
+/**
+* invalid_path - checks if a file exist
+* @str: string to check
+* Return: 0 if a value has been passed
+*/
 int invalid_path(const char *str)
 {
 	int i;
@@ -36,13 +40,14 @@ int invalid_path(const char *str)
 		if (str[i] != '.' && str[i] != '/')
 			return (0);
 	}
-    return (1);
+	return (1);
 }
 /**
 * find_path - checks if a file exist
 * @file_name: name of the file to check
 * @av: argument vector
 * @env: enviroment
+* @count: ammount of times an argument has been passed
 * Return: the route to the file
 */
 char *find_path(char *file_name, char **av, char **env, size_t count)
@@ -82,12 +87,4 @@ char *find_path(char *file_name, char **av, char **env, size_t count)
 	handle_error(av[0], file_name, count);
 	free(path_dup);
 	return (NULL);
-}
-void handle_error(char *av, char *command, size_t count)
-{
-	char *error;
-	error = malloc((sizeof(av) + sizeof(count) + sizeof(command) + 4) * sizeof(char));
-	sprintf(error, "%s: %li: %s", av, count, command);
-	perror(error);
-	free(error);
 }
