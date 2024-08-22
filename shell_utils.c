@@ -21,20 +21,12 @@ char **get_flags(char *buffer, char *arguments[], char **env, int status)
 		free(arguments);
 		return (NULL);
 	}
+	if (handle_builtin(path, env, status, arguments, buffer))
+	{
+		free(arguments);
+		return (NULL);
+	}
 	arguments[0] = path;
-	if (strcmp(arguments[0], "exit") == 0)
-	{
-		free(buffer);
-		free(arguments);
-		exit(status);
-	}
-	if (strcmp(arguments[0], "env") == 0)
-	{
-		for (; *env != NULL; env++)
-			printf("%s\n", *env);
-		free(arguments);
-		return (0);
-	}
 	processed_arg = path;
 	for (i = 1; processed_arg != NULL; i++)
 	{
@@ -50,6 +42,31 @@ char **get_flags(char *buffer, char *arguments[], char **env, int status)
 	}
 	arguments[i] = NULL;
 	return (arguments);
+}
+/**
+ * handle_builtin - processes builtin commands
+ * @in: user input
+ * @env: enviroment
+ * @st: return code
+ * @arg: space to free
+ * @buff: space to free
+ * Return: 0 if not a command
+ */
+int handle_builtin(char *in, char **env, int st, char *arg[], char *buff)
+{
+	if (strcmp(in, "exit") == 0)
+	{
+		free(arg);
+		free(buff);
+		exit(st);
+	}
+	else if (strcmp(in, "env") == 0)
+	{
+		for (; *env != NULL; env++)
+			printf("%s\n", *env);
+		return (1);
+	}
+	return (0);
 }
 /**
  * handle_arg - analizes the first argument
@@ -91,7 +108,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 			wait(&status);
 		if (path)
 			free(path);
-		return(WEXITSTATUS(status));
+		return (WEXITSTATUS(status));
 	}
 	else
 	{

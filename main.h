@@ -17,4 +17,5 @@ char **get_flags(char *buffer, char *arguments[], char **env, int status);
 int invalid_path(const char *str);
 char *get_cwd(char *file_name, char *path, char **env);
 void handle_error(char *av, char *command, size_t count);
+int handle_builtin(char *in, char **env, int st, char *arg[], char *buff);
 #endif
