@@ -90,7 +90,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 			path = get_cwd(arguments[0], path, env);
 		}
 		else
-			path = find_path(arguments[0], av, env, count);
+			path = find_path(arguments[0], env);
 		if (path == NULL)
 			return (2);
 		arguments[0] = path;
@@ -111,10 +111,7 @@ int handle_arg(char *arguments[], char **av, char **env, size_t count)
 		return (WEXITSTATUS(status));
 	}
 	else
-	{
-		handle_error(av[0], arguments[0], count);
 		return (2);
-	}
 	return (status);
 }
 /**

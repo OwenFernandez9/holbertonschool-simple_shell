@@ -33,6 +33,8 @@ int main(int ac, char **av, char **env)
 			continue;
 		}
 		status = handle_arg(arguments, av, env, count);
+		if (status == 2)
+			handle_error(av[0], arguments[0], count);
 		free(arguments);
 	}
 	free(buffer);

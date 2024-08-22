@@ -50,16 +50,21 @@ int invalid_path(const char *str)
 * @count: ammount of times an argument has been passed
 * Return: the route to the file
 */
-char *find_path(char *file_name, char **av, char **env, size_t count)
+char *find_path(char *file_name, char **env)
 {
 	char *path, *path_check, *path_dup, *absolute_route;
 	struct stat st;
 	int dup_size;
 
+	if (strncmp(file_name, "../", 3) == 0)
+	{
+		if (stat(file_name, &st) == 0)
+			return (file_name);
+		return (NULL);
+	}
 	path = _getenv("PATH", env);
 	if (path == NULL)
 	{
-		handle_error(av[0], file_name, count);
 		return (NULL);
 	}
 	path_dup = strdup(path);
@@ -71,7 +76,6 @@ char *find_path(char *file_name, char **av, char **env, size_t count)
 		absolute_route = malloc(dup_size * sizeof(char));
 		if (absolute_route == NULL)
 		{
-			handle_error(av[0], file_name, count);
 			free(path_dup);
 			return (NULL);
 		}
@@ -84,7 +88,6 @@ char *find_path(char *file_name, char **av, char **env, size_t count)
 		path_check = strtok(NULL, ":");
 		free(absolute_route);
 	}
-	handle_error(av[0], file_name, count);
 	free(path_dup);
 	return (NULL);
 }
