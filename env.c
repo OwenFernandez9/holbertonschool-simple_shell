@@ -9,6 +9,9 @@ char *_getenv(const char *name, char **enviroment)
 {
 	char *env_val, *env_var, **env, *env_dup;
 
+	if (**enviroment == '\0')
+		return (NULL);
+
 	for (env = enviroment; *env != NULL; env++)
 	{
 		env_dup = strdup(*env);
@@ -45,9 +48,7 @@ int invalid_path(const char *str)
 /**
 * find_path - checks if a file exist
 * @file_name: name of the file to check
-* @av: argument vector
 * @env: enviroment
-* @count: ammount of times an argument has been passed
 * Return: the route to the file
 */
 char *find_path(char *file_name, char **env)
